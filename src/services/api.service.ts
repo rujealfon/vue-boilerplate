@@ -5,8 +5,13 @@ import axios, {
   AxiosError
 } from 'axios'
 
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+
 const api: AxiosInstance = axios.create({
   baseURL: 'https://jsonplaceholder.typicode.com',
+  // baseURL: 'https://httpstat.us/',
   headers: {
     'Content-Type': 'application/json'
     // Add other headers if needed
@@ -35,8 +40,18 @@ api.interceptors.response.use(
     return response
   },
   (error: AxiosError) => {
+    // Show toast error
+    toast.error(error.message)
+
     // Handle response errors
     console.error('Response error:', error)
+
+    if (error.response && error.response.status === 401) {
+      // Handle unauthorized error
+    } else {
+      // Handle other errors
+    }
+
     return Promise.reject(error)
   }
 )
