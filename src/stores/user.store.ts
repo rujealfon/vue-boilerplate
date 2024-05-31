@@ -1,4 +1,3 @@
-// src/store/userStore.ts
 import { defineStore } from 'pinia'
 import type { User } from '@/models/user.model'
 import api from '@/services/api.service'
@@ -19,7 +18,7 @@ export const useUserStore = defineStore('user', {
     async getUsers(): Promise<void> {
       this.loading = true
       try {
-        const response = await api.get<User[]>('/users')
+        const response = await this.$axios.get<User[]>('/users')
         this.users = response.data
       } catch (error: any) {
         this.error = error
@@ -30,7 +29,7 @@ export const useUserStore = defineStore('user', {
     async createUser(newUser: User): Promise<void> {
       this.loading = true
       try {
-        const response = await api.post<User>('/users', newUser)
+        const response = await this.$axios.post<User>('/users', newUser)
         this.users.push(response.data)
       } catch (error: any) {
         this.error = error
