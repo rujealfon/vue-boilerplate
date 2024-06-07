@@ -19,14 +19,14 @@
 import type { User } from '@/models/user.model'
 
 import { onMounted, ref } from 'vue'
-import { useUserStore } from '@/stores/user.store'
+import { useUserStore } from '@/stores/user.store.setup'
 import { storeToRefs } from 'pinia'
 
 const userStore = useUserStore()
 
-const { users, loading, error } = storeToRefs(userStore)
+const { users, loading, error, page } = storeToRefs(userStore)
 
-console.log(users)
+console.log(page)
 
 const newUserName = ref<string>('')
 
@@ -35,6 +35,8 @@ const newUserName = ref<string>('')
 // })
 
 const fetchUsers = async () => {
+  userStore.$reset()
+
   await userStore.getUsers()
 }
 
@@ -57,10 +59,4 @@ const deleteUser = async (userId: number) => {
     await userStore.deleteUser(userId)
   }
 }
-
-// const users = userStore.users
-// const loading = userStore.loading
-// const error = userStore.error
-
-console.log(users)
 </script>

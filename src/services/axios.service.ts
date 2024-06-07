@@ -4,13 +4,22 @@ import axios, {
   type AxiosResponse,
   AxiosError
 } from 'axios'
-
 import { useToast } from 'vue-toastification'
+
+// // Define ApiResponse interface for successful responses
+// interface ApiResponse<T> extends AxiosResponse {
+//   data: T
+// }
+
+// // Define CustomAxiosError interface for custom error handling
+// interface CustomAxiosError<T> extends AxiosError {
+//   response: ApiResponse<T>
+// }
 
 const toast = useToast()
 
-const api: AxiosInstance = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com',
+const $axios: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
   // baseURL: 'https://httpstat.us/',
   headers: {
     'Content-Type': 'application/json'
@@ -18,12 +27,12 @@ const api: AxiosInstance = axios.create({
   }
 })
 
-api.interceptors.request.use(
+$axios.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Modify the request or log it before sending
     console.log('Starting request to:', config.url)
     // Add authorization header if needed
-    // config.headers['Authorization'] = `Bearer YOUR_TOKEN`;
+    // config.headers.Authorization = `Bearer YOUR_TOKEN`
     return config
   },
   (error: AxiosError) => {
@@ -33,13 +42,13 @@ api.interceptors.request.use(
   }
 )
 
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
+$axios.interceptors.response.use(
+  (response: AxiosResponse<any>) => {
     // Handle the response, log it, or modify it
     console.log('Received response from:', response.config.url)
     return response
   },
-  (error: AxiosError) => {
+  (error: AxiosError<any>) => {
     // Show toast error
     toast.error(error.message)
 
@@ -56,4 +65,4 @@ api.interceptors.response.use(
   }
 )
 
-export default api
+export default $axios

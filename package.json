@@ -16,9 +16,13 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.40.1",
+    "@vueuse/core": "^10.10.0",
     "axios": "^1.7.2",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.21",
+    "vue-loading-overlay": "^6.0",
     "vue-router": "^4.3.0",
     "vue-toastification": "2.0.0-rc.5"
   },

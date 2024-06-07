@@ -10,13 +10,13 @@ import { useToast } from 'vue-toastification'
 const toast = useToast()
 
 type AxiosOptions = {
-  baseUrl: string
+  baseURL: string
 }
 
 export default {
   install: (app: App, options: AxiosOptions) => {
     const $axios: AxiosInstance = axios.create({
-      baseURL: options.baseUrl,
+      baseURL: options.baseURL,
       // baseURL: 'https://httpstat.us/',
       headers: {
         'Content-Type': 'application/json'
