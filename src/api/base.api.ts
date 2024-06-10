@@ -1,31 +1,28 @@
 import axios from '@/services/axios.service'
+import type { Paginate as GetResponse } from '@/models/paginate.model'
 
-// type Api<T> = {
-//   getAll: () => Promise<T[]>
-//   getById: (id: string) => Promise<T>
-//   create: (data: T) => Promise<T>
-//   update: (id: string, data: T) => Promise<T>
-//   remove: (id: string) => Promise<void>
-// }
+type QueryParams = {
+  [key in 'page' | 'q' | 'delay']?: string | number
+}
 
-const baseApi = <T>(endpoint: string) => {
-  const get = async <U>(params?: Record<string, string | number>): Promise<U[]> => {
-    const response = await axios.get<U[]>(endpoint, { params })
+const baseApi = <TResource>(endpoint: string) => {
+  const get = async (params?: QueryParams): Promise<GetResponse<TResource>> => {
+    const response = await axios.get<GetResponse<TResource>>(endpoint, { params })
     return response.data
   }
 
-  const create = async (payload: Omit<T, 'id'>): Promise<T> => {
-    const response = await axios.post<T>(endpoint, payload)
+  const create = async (payload: Omit<TResource, 'id'>): Promise<TResource> => {
+    const response = await axios.post<TResource>(endpoint, payload)
     return response.data
   }
 
-  const read = async (id: number): Promise<T> => {
-    const response = await axios.get<T>(`${endpoint}/${id}`)
+  const read = async (id: number): Promise<TResource> => {
+    const response = await axios.get<TResource>(`${endpoint}/${id}`)
     return response.data
   }
 
-  const update = async (id: string, payload: T): Promise<T> => {
-    const response = await axios.put<T>(`${endpoint}/${id}`, payload)
+  const update = async (payload: TResource): Promise<TResource> => {
+    const response = await axios.put<TResource>(`${endpoint}/${payload.id}`, payload)
     return response.data
   }
 

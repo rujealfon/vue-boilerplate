@@ -1,13 +1,13 @@
 import type { Paginate } from '@/models/paginate.model'
 
-export interface Users extends Paginate {
+export interface Users extends Paginate<User> {
   data: User[]
 }
 
 export interface User {
   id: number
-  email: string
-  first_name: string
-  last_name: string
-  avatar: string
+  name: string
+  year: number
+  color: string
+  pantone_value: string
 }

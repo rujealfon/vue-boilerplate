@@ -1,26 +1,40 @@
 import axios from '@/services/axios.service'
 
-abstract class BaseRepository<T> {
-  constructor(protected resource: string) {}
+abstract class BaseRepository<T extends { id: number }, U> {
+  protected readonly resource: string
 
-  get<U>(params?: Record<string, string | number>) {
-    return axios.get<U>(`${this.resource}`, { params })
+  constructor(resource: string) {
+    this.resource = resource
   }
 
-  create(payload: Omit<T, 'id'>) {
-    return axios.post<T>(`${this.resource}`, payload)
+  async search(params?: {
+    delay?: number
+    filter?: string
+    page?: number
+    q?: string
+    sort?: string
+  }): Promise<U> {
+    const { data } = await axios.get<U>(this.resource, { params })
+    return data
   }
 
-  read(id: number) {
-    return axios.get<T>(`${this.resource}/${id}`)
+  async create(payload: Omit<T, 'id'>): Promise<T> {
+    const { data } = await axios.post<T>(this.resource, payload)
+    return data
   }
 
-  update(payload: Partial<Omit<T, 'id'>>) {
-    return axios.put<T>(`${this.resource}`, payload)
+  async read(id: number): Promise<T> {
+    const { data } = await axios.get<T>(`${this.resource}/${id}`)
+    return data
   }
 
-  remove(id: number) {
-    return axios.delete<Promise<void>>(`${this.resource}/${id}`)
+  async update(payload: T): Promise<T> {
+    const { data } = await axios.put<T>(`${this.resource}/${payload.id}`, payload)
+    return data
+  }
+
+  async delete(id: number): Promise<void> {
+    await axios.delete(`${this.resource}/${id}`)
   }
 }
 

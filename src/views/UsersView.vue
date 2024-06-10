@@ -1,8 +1,93 @@
+<script setup lang="ts">
+import type { User, Users } from '@/models/user.model'
+import UserRepository from '@/repositories/user.repository'
+import { computed, ref } from 'vue'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/vue-query'
+
+const queryClient = useQueryClient()
+
+// Search
+const { data, error, refetch, isPending, isLoading, isRefetching } = useQuery<Users>({
+  queryKey: ['users'],
+  queryFn: () => UserRepository.search()
+})
+
+const users = computed(() => data.value?.data)
+const page = computed(() => data.value?.page)
+
+// Create
+const newUserName = ref<string>('')
+
+const createMutation = useMutation<User, Error, Omit<User, 'id'>, unknown>({
+  mutationFn: (payload: Omit<User, 'id'>): Promise<User> => {
+    return UserRepository.create(payload)
+  },
+  onSuccess: () => {
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  }
+})
+
+async function createNewUser(): Promise<void> {
+  if (newUserName.value.trim() !== '') {
+    await createMutation.mutateAsync({
+      name: newUserName.value,
+      year: 200,
+      color: 'l',
+      pantone_value: 'q'
+    })
+    newUserName.value = ''
+  }
+}
+
+// Update
+const updateMutation = useMutation<User, Error, User, unknown>({
+  mutationFn: (payload: User): Promise<User> => {
+    return UserRepository.update(payload)
+  },
+  onSuccess: () => {
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  }
+})
+
+async function updateUser(user: User): Promise<void> {
+  const newName = prompt('Enter new name', user.name)
+
+  if (newName !== null) {
+    await updateMutation.mutateAsync({
+      ...user,
+      name: newName
+    })
+  }
+}
+
+// Remove
+const removeMutation = useMutation<void, Error, number, unknown>({
+  mutationFn: (userId: number): Promise<void> => {
+    return UserRepository.delete(userId)
+  },
+  onSuccess: () => {
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['users'] })
+  }
+})
+
+async function deleteUser(userId: number): Promise<void> {
+  if (confirm('Are you sure you want to delete this user?')) {
+    removeMutation.mutateAsync(userId)
+  }
+}
+</script>
+
 <template>
   <div id="app">
     <div v-if="error">Error: {{ error.message }}</div>
+    <div v-if="isRefetching">isRefetching...</div>
+    <div v-if="isPending">isPending...</div>
+    <div v-if="isLoading">isLoading...</div>
     <div v-for="user in users" :key="user.id">
-      <span>{{ user.first_name }}</span>
+      <span>{{ user.name }}</span>
       <button @click="updateUser(user)">Update</button>
       <button @click="deleteUser(user.id)">Delete</button>
     </div>
@@ -10,8 +95,8 @@
       <input v-model="newUserName" type="text" placeholder="Enter user name" />
       <button type="submit">Add User</button>
     </form>
-    <button @click="fetchUsers">Refresh Users</button>
-
+    <button @click="refetch()">Refresh Users</button>
+    <!--
     <div class="my-4">
       <button :disabled="isFirstPage" @click="prev">prev</button>
       <button
@@ -23,7 +108,7 @@
         {{ item }}
       </button>
       <button :disabled="isLastPage" @click="next">next</button>
-    </div>
+    </div> -->
 
     <!-- <UseOffsetPagination
       v-slot="{ currentPage, currentPageSize, next, prev, pageCount, isFirstPage, isLastPage }"
@@ -52,82 +137,3 @@
     </UseOffsetPagination> -->
   </div>
 </template>
-
-<script setup lang="ts">
-import { useOffsetPagination } from '@vueuse/core'
-import type { User } from '@/models/user.model'
-
-import { onMounted, ref } from 'vue'
-import { useUserStore } from '@/stores/user.store'
-import { storeToRefs } from 'pinia'
-
-const userStore = useUserStore()
-
-const { users, error, total, per_page, page } = storeToRefs(userStore)
-
-const newUserName = ref<string>('')
-
-// const page = ref(1)
-///const pageSize = ref(10)
-
-// fetchData({
-//   currentPage: page.value,
-//   currentPageSize: pageSize.value
-// })
-
-// function fetchData({
-//   currentPage,
-//   currentPageSize
-// }: {
-//   currentPage: number
-//   currentPageSize: number
-// }) {
-//   fetch(currentPage, currentPageSize).then((responseData) => {
-//     users.value = responseData
-//   })
-// }
-
-onMounted(async () => {
-  await fetchUsers()
-})
-
-const fetchUsers = async () => {
-  // userStore.$reset()
-
-  await userStore.getUsers({ page: page.value })
-}
-
-const { currentPage, currentPageSize, pageCount, isFirstPage, isLastPage, prev, next } =
-  useOffsetPagination({
-    total,
-    page,
-    pageSize: per_page,
-    onPageChange: fetchUsers,
-    onPageSizeChange: fetchUsers
-  })
-
-const createNewUser = async () => {
-  if (newUserName.value.trim() !== '') {
-    await userStore.createUser({
-      first_name: newUserName.value,
-      email: '',
-      last_name: '',
-      avatar: ''
-    })
-    newUserName.value = ''
-  }
-}
-
-const updateUser = async (user: User) => {
-  const newName = prompt('Enter new name', user.first_name)
-  if (newName !== null) {
-    await userStore.updateUser({ ...user, first_name: newName })
-  }
-}
-
-const deleteUser = async (userId: number) => {
-  if (confirm('Are you sure you want to delete this user?')) {
-    await userStore.deleteUser(userId)
-  }
-}
-</script>
