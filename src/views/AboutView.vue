@@ -1,20 +1,3 @@
-<template>
-  <div id="app">
-    <div v-if="loading">Loading...</div>
-    <div v-if="error">Error: {{ error.message }}</div>
-    <div v-for="user in users" :key="user.id">
-      <span>{{ user.name }}</span>
-      <button @click="updateUser(user)">Update</button>
-      <button @click="deleteUser(user.id)">Delete</button>
-    </div>
-    <form @submit.prevent="createNewUser">
-      <input v-model="newUserName" type="text" placeholder="Enter user name" />
-      <button type="submit">Add User</button>
-    </form>
-    <button @click="fetchUsers">Refresh Users</button>
-  </div>
-</template>
-
 <script setup lang="ts">
 import type { User } from '@/models/user.model'
 
@@ -60,3 +43,20 @@ const deleteUser = async (userId: number) => {
   }
 }
 </script>
+
+<template>
+  <div id="app">
+    <div v-if="loading">Loading...</div>
+    <div v-if="error">Error: {{ error.message }}</div>
+    <div v-for="user in users" :key="user.id">
+      <span>{{ user.name }}</span>
+      <button @click="updateUser(user)">Update</button>
+      <button @click="deleteUser(user.id)">Delete</button>
+    </div>
+    <form @submit.prevent="createNewUser">
+      <input v-model="newUserName" type="text" placeholder="Enter user name" />
+      <button type="submit">Add User</button>
+    </form>
+    <button @click="fetchUsers">Refresh Users</button>
+  </div>
+</template>

@@ -5,7 +5,7 @@ type QueryParams = {
   [key in 'page' | 'q' | 'delay']?: string | number
 }
 
-const baseApi = <TResource>(endpoint: string) => {
+const BaseApi = <TResource>(endpoint: string) => {
   const get = async (params?: QueryParams): Promise<GetResponse<TResource>> => {
     const response = await axios.get<GetResponse<TResource>>(endpoint, { params })
     return response.data
@@ -39,4 +39,4 @@ const baseApi = <TResource>(endpoint: string) => {
   }
 }
 
-export default baseApi
+export default BaseApi

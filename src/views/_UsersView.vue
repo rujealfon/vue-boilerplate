@@ -1,58 +1,3 @@
-<template>
-  <div id="app">
-    <div v-if="error">Error: {{ error.message }}</div>
-    <div v-for="user in users" :key="user.id">
-      <span>{{ user.first_name }}</span>
-      <button @click="updateUser(user)">Update</button>
-      <button @click="deleteUser(user.id)">Delete</button>
-    </div>
-    <form @submit.prevent="createNewUser">
-      <input v-model="newUserName" type="text" placeholder="Enter user name" />
-      <button type="submit">Add User</button>
-    </form>
-    <button @click="fetchUsers">Refresh Users</button>
-
-    <div class="my-4">
-      <button :disabled="isFirstPage" @click="prev">prev</button>
-      <button
-        v-for="item in pageCount"
-        :key="item"
-        :disabled="currentPage === item"
-        @click="currentPage = item"
-      >
-        {{ item }}
-      </button>
-      <button :disabled="isLastPage" @click="next">next</button>
-    </div>
-
-    <!-- <UseOffsetPagination
-      v-slot="{ currentPage, currentPageSize, next, prev, pageCount, isFirstPage, isLastPage }"
-      :total="total"
-      @page-change="fetchUsers"
-      @page-size-change="fetchUsers"
-    >
-      <div class="gap-x-4 gap-y-2 grid-cols-2 inline-grid items-center">
-        <div opacity="50">total:</div>
-        <div>{{ total }}</div>
-        <div opacity="50">pageCount:</div>
-        <div>{{ pageCount }}</div>
-        <div opacity="50">currentPageSize:</div>
-        <div>{{ currentPageSize }}</div>
-        <div opacity="50">currentPage:</div>
-        <div>{{ currentPage }}</div>
-        <div opacity="50">isFirstPage:</div>
-        <div>{{ isFirstPage }}</div>
-        <div opacity="50">isLastPage:</div>
-        <div>{{ isLastPage }}</div>
-      </div>
-      <div>
-        <button :disabled="isFirstPage" @click="prev">prev</button>
-        <button :disabled="isLastPage" @click="next">next</button>
-      </div>
-    </UseOffsetPagination> -->
-  </div>
-</template>
-
 <script setup lang="ts">
 import { useOffsetPagination } from '@vueuse/core'
 import type { User } from '@/models/user.model'
@@ -131,3 +76,58 @@ const deleteUser = async (userId: number) => {
   }
 }
 </script>
+
+<template>
+  <div id="app">
+    <div v-if="error">Error: {{ error.message }}</div>
+    <div v-for="user in users" :key="user.id">
+      <span>{{ user.first_name }}</span>
+      <button @click="updateUser(user)">Update</button>
+      <button @click="deleteUser(user.id)">Delete</button>
+    </div>
+    <form @submit.prevent="createNewUser">
+      <input v-model="newUserName" type="text" placeholder="Enter user name" />
+      <button type="submit">Add User</button>
+    </form>
+    <button @click="fetchUsers">Refresh Users</button>
+
+    <div class="my-4">
+      <button :disabled="isFirstPage" @click="prev">prev</button>
+      <button
+        v-for="item in pageCount"
+        :key="item"
+        :disabled="currentPage === item"
+        @click="currentPage = item"
+      >
+        {{ item }}
+      </button>
+      <button :disabled="isLastPage" @click="next">next</button>
+    </div>
+
+    <!-- <UseOffsetPagination
+      v-slot="{ currentPage, currentPageSize, next, prev, pageCount, isFirstPage, isLastPage }"
+      :total="total"
+      @page-change="fetchUsers"
+      @page-size-change="fetchUsers"
+    >
+      <div class="gap-x-4 gap-y-2 grid-cols-2 inline-grid items-center">
+        <div opacity="50">total:</div>
+        <div>{{ total }}</div>
+        <div opacity="50">pageCount:</div>
+        <div>{{ pageCount }}</div>
+        <div opacity="50">currentPageSize:</div>
+        <div>{{ currentPageSize }}</div>
+        <div opacity="50">currentPage:</div>
+        <div>{{ currentPage }}</div>
+        <div opacity="50">isFirstPage:</div>
+        <div>{{ isFirstPage }}</div>
+        <div opacity="50">isLastPage:</div>
+        <div>{{ isLastPage }}</div>
+      </div>
+      <div>
+        <button :disabled="isFirstPage" @click="prev">prev</button>
+        <button :disabled="isLastPage" @click="next">next</button>
+      </div>
+    </UseOffsetPagination> -->
+  </div>
+</template>
