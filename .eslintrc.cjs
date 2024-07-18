@@ -9,6 +9,11 @@ module.exports = {
     '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier/skip-formatting'
   ],
+  rules: {
+    'vue/block-order': ['error', {
+      order: ['script', 'template', 'style']
+    }]
+  },
   overrides: [
     {
       files: [
